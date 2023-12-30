@@ -4,7 +4,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/create', sessionController.createSession);
+router.post('/create',authMiddleware.verifyToken, sessionController.createSession);
 
 router.get('/availableSessions', authMiddleware.verifyToken, sessionController.getAvailableSessions);
 
