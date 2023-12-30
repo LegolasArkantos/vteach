@@ -17,7 +17,7 @@ const LoginPage = () => {
       const response = await axios.post(
         'http://localhost:3001/auth/login',
         { email, password },
-        { withCredentials: true } // Add this line
+        { withCredentials: true } 
     );
       
       console.log(response.data)

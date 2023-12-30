@@ -7,6 +7,9 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useRefreshToken from '../hooks/useRefreshToken';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from './Sidebar';
+
 
 const drawerWidth = 240;
 
@@ -42,6 +45,7 @@ const TeacherHomePage = () => {
     const axiosPrivate = useAxiosPrivate();
     const [teacherData, setTeacherData] = useState(null);
     const refresh = useRefreshToken();
+    const navigate = useNavigate();
 
     useEffect(() => {
         let isMounted = true;
@@ -54,7 +58,7 @@ const TeacherHomePage = () => {
                     return;
                 }
 
-                const response = await axiosPrivate.get(`http://localhost:3001/teachers/${auth.teacherId}`, {
+                const response = await axiosPrivate.get(`/teachers/${auth.teacherId}`, {
                     signal: controller.signal
                 });
 
@@ -74,39 +78,9 @@ const TeacherHomePage = () => {
 
     
     return (
+        
         <RootContainer>
-            {/* Sidebar */}
-            <DrawerContainer variant="permanent" anchor="left">
-                <DrawerPaper>
-                    <Avatar sx={{ width: 80, height: 80, marginBottom: '10px' }}>
-                        <AccountCircleIcon sx={{ width: 80, height: 80 }} />
-                    </Avatar>
-                    <Typography variant="h6" gutterBottom>
-                        {teacherData && `${teacherData.user.firstName} ${teacherData.user.lastName}`}
-                    </Typography>
-                    <List>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <MailOutlineIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Homepage" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <MailOutlineIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Sessions" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <MailOutlineIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Messaging" />
-                        </ListItem>
-                    </List>
-                </DrawerPaper>
-            </DrawerContainer>
-
+            <Sidebar />
             {/* Main Content Area */}
             <ContentContainer>
                 {/* Content of the Teacher Homepage */}

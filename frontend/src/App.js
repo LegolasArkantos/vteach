@@ -6,6 +6,7 @@ import StudentHomePage from './components/StudentHomePage';
 import Unauthorized from './components/Unauthorized';
 import RequireAuth from './components/RequireAuth';
 import TeacherHomePage from './components/TeacherHomePage';
+import SessionPage from './components/SessionPage';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/teacherHomePage" element={<TeacherHomePage />} />
+        <Route path="/session" element={<SessionPage />} />
 
         <Route element={<RequireAuth allowedRoles={['student']}/>}>
           <Route path="/studenthomepage" element={<StudentHomePage />} />
