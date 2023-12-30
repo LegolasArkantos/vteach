@@ -32,7 +32,7 @@ const Sidebar = ({ teacherData }) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        paddingTop: '20px', // Adjust as needed
+        paddingTop: '20px', 
     });
     
 

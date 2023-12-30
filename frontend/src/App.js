@@ -7,6 +7,7 @@ import Unauthorized from './components/Unauthorized';
 import RequireAuth from './components/RequireAuth';
 import TeacherHomePage from './components/TeacherHomePage';
 import SessionPage from './components/SessionPage';
+import PersistLogin from './components/PersistLogin';
 
 const App = () => {
   return (
@@ -14,8 +15,13 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/teacherHomePage" element={<TeacherHomePage />} />
-        <Route path="/session" element={<SessionPage />} />
+
+        <Route element={<PersistLogin />}>
+          <Route element={<RequireAuth allowedRoles={['teacher']}/>}>
+            <Route path="/teacherHomePage" element={<TeacherHomePage />} />
+            <Route path="/session" element={<SessionPage />} />
+          </Route>
+        </Route>
 
         <Route element={<RequireAuth allowedRoles={['student']}/>}>
           <Route path="/studenthomepage" element={<StudentHomePage />} />
