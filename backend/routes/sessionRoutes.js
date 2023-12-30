@@ -4,11 +4,11 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/create', authMiddleware.verifyToken, sessionController.createSession);
+router.post('/create', sessionController.createSession);
 
 router.get('/availableSessions', authMiddleware.verifyToken, sessionController.getAvailableSessions);
 
-router.post('/joinSession/:sessionId', authMiddleware.verifyToken,  authMiddleware.verifyToken,sessionController.joinSession);
+router.post('/joinSession/:sessionId',  authMiddleware.verifyToken,sessionController.joinSession);
 
 router.put('/updateSession/:sessionId', authMiddleware.verifyToken, sessionController.updateSession);
 
