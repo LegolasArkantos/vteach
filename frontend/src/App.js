@@ -8,11 +8,13 @@ import RequireAuth from './components/RequireAuth';
 import TeacherHomePage from './components/TeacherHomePage';
 import SessionPage from './components/SessionPage';
 import PersistLogin from './components/PersistLogin';
+import LandingPage from './components/LandingPage';
 
 const App = () => {
   return (
     
       <Routes>
+         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
 
