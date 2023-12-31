@@ -121,7 +121,7 @@ const refreshTokens = (req, res) => {
         let response = { accessToken: null };
 
         try {
-            // Assuming User model represents your user collection in the database
+            
             const userDetails = await User.findOne({ _id: user.userId });
 
             if (!userDetails) {
