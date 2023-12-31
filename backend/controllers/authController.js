@@ -113,16 +113,47 @@ const refreshTokens = (req, res) => {
         return res.status(401).json({ message: 'Refresh token not provided' });
     }
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
         if (err) {
             return res.status(403).json({ message: 'Invalid refresh token' });
         }
 
-        const accessToken = jwt.sign({ userId: user.userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
+        let response = { accessToken: null };
 
-        res.json({ accessToken });
+        try {
+            // Assuming User model represents your user collection in the database
+            const userDetails = await User.findOne({ _id: user.userId });
+
+            if (!userDetails) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            response.role = userDetails.role;
+
+            if (userDetails.role === 'teacher') {
+                const teacher = await Teacher.findOne({ user: userDetails._id });
+                if (teacher) {
+                    response.teacherId = teacher._id;
+                }
+            } else if (userDetails.role === 'student') {
+                const student = await Student.findOne({ user: userDetails._id });
+                if (student) {
+                    response.studentId = student._id;
+                }
+            }
+
+            const accessToken = jwt.sign({ userId: userDetails._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
+            response.accessToken = accessToken;
+
+            res.json(response);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
     });
 };
+
+
 
 module.exports = {
     signup,
