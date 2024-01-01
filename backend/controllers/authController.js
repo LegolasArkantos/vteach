@@ -12,7 +12,7 @@ const Student = require('../models/student');
 
 // Generate JWT Token
 const generateToken = (userId) => {
-    const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
+    const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
     const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
 
     return { accessToken, refreshToken };
@@ -129,6 +129,8 @@ const refreshTokens = (req, res) => {
             }
 
             response.role = userDetails.role;
+            response.firstName=userDetails.firstName;
+            response.lastName=userDetails.lastName;
 
             if (userDetails.role === 'teacher') {
                 const teacher = await Teacher.findOne({ user: userDetails._id });
@@ -142,7 +144,7 @@ const refreshTokens = (req, res) => {
                 }
             }
 
-            const accessToken = jwt.sign({ userId: userDetails._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
+            const accessToken = jwt.sign({ userId: userDetails._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
             response.accessToken = accessToken;
 
             res.json(response);

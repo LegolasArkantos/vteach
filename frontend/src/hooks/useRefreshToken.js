@@ -17,7 +17,9 @@ const useRefreshToken = () => {
             console.log(response);
             return { ...prev,role: response.data.role, 
                 teacherId: response.data.teacherId, 
-                accessToken: response.data.accessToken
+                accessToken: response.data.accessToken,
+                firstName:response.data.firstName,
+                lastName:response.data.lastName,
              };
         });
 

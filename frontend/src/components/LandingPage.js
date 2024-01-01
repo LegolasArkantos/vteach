@@ -83,7 +83,7 @@ const texts = [
     return (
       <Box
         sx={{
-          backgroundColor: '#f0f5f5',
+          backgroundColor: '#4d7373',
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
@@ -117,7 +117,7 @@ const texts = [
                   style={{
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
+                    objectFit: 'scale-down',
                     borderRadius: '8px',
                   }}
                 />

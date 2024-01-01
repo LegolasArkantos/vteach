@@ -3,10 +3,11 @@ import { styled } from '@mui/system';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 
 
 const Sidebar = ({ teacherData }) => {
-
+    const { auth } = useAuth();
     const navigate = useNavigate();
     const handleHomepageClick = () => {
         // Use the navigate function to redirect to the desired route
@@ -43,7 +44,7 @@ const Sidebar = ({ teacherData }) => {
                     <AccountCircleIcon sx={{ width: 80, height: 80 }} />
                 </Avatar>
                 <Typography variant="h6" gutterBottom>
-                    {teacherData && `${teacherData.user.firstName} ${teacherData.user.lastName}`}
+                    {auth && `${auth.firstName} ${auth.lastName}`}
                 </Typography>
                 <List>
                     <ListItemButton  onClick={handleHomepageClick}>
