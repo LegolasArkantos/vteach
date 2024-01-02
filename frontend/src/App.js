@@ -9,6 +9,7 @@ import TeacherHomePage from './components/TeacherHomePage';
 import SessionPage from './components/SessionPage';
 import PersistLogin from './components/PersistLogin';
 import LandingPage from './components/LandingPage';
+import Chat from './components/Chats';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
          <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/message" element={<Chat />} />
 
         <Route element={<PersistLogin />}>
           <Route element={<RequireAuth allowedRoles={['teacher']}/>}>
