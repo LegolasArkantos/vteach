@@ -22,13 +22,18 @@ const LoginPage = () => {
       
       console.log(response.data)
       
-      const { accessToken, refreshToken,role,teacherId } = response.data;
+      const { accessToken, refreshToken,role,teacherId,studentId } = response.data;
 
 
       // Call the login function with the user data
       console.log(accessToken,role,teacherId);
-      setAuth({ accessToken, refreshToken ,role,teacherId});
-      navigate('/teacherhomepage');
+      setAuth({ accessToken, refreshToken ,role,teacherId, studentId});
+      if (role === 'teacher') {
+        navigate('/teacherhomepage');
+      } else {
+        navigate('/studenthomepage');
+      }
+  
 
      
     } catch (error) {
