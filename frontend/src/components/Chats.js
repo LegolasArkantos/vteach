@@ -1,79 +1,126 @@
-import React, { useState, useRef ,useEffect} from 'react';
+import React, { useState ,useEffect} from 'react';
 import { Typography, Drawer, List, ListItemButton, Avatar, TextField, Button } from '@mui/material';
-import { styled } from '@mui/system';
+
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import useAuth from '../hooks/useAuth';
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import styled from 'styled-components';
 
 const Chats = () => {
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [messageInput, setMessageInput] = useState('');
-  const [messages, setMessages] = useState({
-    person1: ['Hi there!', 'How are you?'],
-    person2: ['Hello!', 'Im good. How about you?'],
-  });
-
+  const [studentsData, setStudentsData] = useState([]);
+  const [selectedPersonName, setSelectedPersonName] = useState('');
   const navigate = useNavigate();
-  
-  
+  const { auth } = useAuth();
+  const axiosPrivate = useAxiosPrivate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosPrivate.get(`/teachers/myStudents/${auth.teacherId}`);
+        setStudentsData(response.data.studentsData);
+        console.log(response.data.studentsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [auth.teacherId, axiosPrivate]);
+
   const handlePersonClick = (person) => {
-    setSelectedPerson(person);
+    setSelectedPerson(person.studentId);
+    setSelectedPersonName(`${person.firstName} ${person.lastName}`);
   };
 
-  const handleMessageSend = (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+  const handleMessageSend = async (e) => {
+    e.preventDefault();
     if (selectedPerson && messageInput.trim() !== '') {
-      setMessages({
-        ...messages,
-        [selectedPerson]: [...messages[selectedPerson], messageInput],
-      });
+      const senderId = auth.teacherId;
+      const receiverId = selectedPerson;
+      const content = messageInput;
+
+      await sendMessage(senderId, receiverId, content);
+
       setMessageInput('');
-      
     }
   };
 
-  const drawerWidth = 240;
+  const [chatMessages, setChatMessages] = useState([]);
 
-  const DrawerContainer = styled(Drawer)({
-    width: drawerWidth,
-    flexShrink: 0,
-  });
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        if (selectedPerson && auth) {
+          const response = await axiosPrivate.get(`/messages/getMessages/${auth.teacherId}/${selectedPerson}`);
+          setChatMessages(response.data.messages);
+        }
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
 
-  const DrawerPaper = styled('div')({
-    width: drawerWidth,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingTop: '20px',
-  });
+    fetchMessages();
+  }, [selectedPerson, auth.teacherId, axiosPrivate]);
 
-  const MainContent = styled('div')({
-    marginLeft: drawerWidth,
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '20px',
-    flex: 1,
-  });
+  const sendMessage = async (senderId, receiverId, content) => {
+    try {
+      const response = await axiosPrivate.post('/messages/sendMessage', {
+        senderId,
+        receiverId,
+        content,
+      });
 
-  const PeopleNamesBox = styled('div')({
-    width: '200px',
-    padding: '20px',
-    border: '1px solid #ccc',
-    marginRight: '20px',
-    flex: 'none',
-    minHeight: '600px',
-  });
+      const sentMessage = response.data.message;
 
-  const MessageDisplayBox = styled('div')({
-    flex: 1,
-    border: '1px solid #ccc',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    minHeight: '550px',
-  });
+      setChatMessages((prevMessages) => [...prevMessages, sentMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  };
+
+  const ChatContainer = styled.div`
+    display: flex;
+  `;
+
+  const PeopleNamesBox = styled.div`
+    width: 200px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin-right: 20px;
+    border-radius: 10px;
+    min-height: 600px;
+  `;
+
+  const MessageDisplayBox = styled.div`
+    flex: 1;
+    border: 1px solid #ddd;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 10px;
+  `;
+
+  const MessageContainer = ({ sender, children }) => (
+    <div
+      style={{
+        textAlign: sender === selectedPerson ? 'right' : 'left',
+        backgroundColor: sender === selectedPerson ? '#e6f7ff' : '#ccffcc',
+        padding: '8px',
+        borderRadius: '8px',
+        marginBottom: '8px',
+        wordBreak: 'break-word',
+      }}
+    >
+      {children}
+    </div>
+  );
 
   return (
     <div style={{ display: 'flex' }}>
@@ -88,31 +135,51 @@ const Chats = () => {
 
         <div style={{ display: 'flex' }}>
           {/* People Names Box */}
-          <PeopleNamesBox>
+          <div
+            style={{
+              width: '200px',
+              padding: '20px',
+              border: '1px solid #ccc',
+              marginRight: '20px',
+              borderRadius: '10px',
+              minHeight: '600px',
+            }}
+          >
             <Typography variant="h6">People you are talking to:</Typography>
             <List>
-              <ListItemButton onClick={() => handlePersonClick('person1')}>
-                <Avatar>
-                  <AccountCircleIcon />
-                </Avatar>
-                <Typography variant="subtitle1">Person 1</Typography>
-              </ListItemButton>
-              <ListItemButton onClick={() => handlePersonClick('person2')}>
-                <Avatar>
-                  <AccountCircleIcon />
-                </Avatar>
-                <Typography variant="subtitle1">Person 2</Typography>
-              </ListItemButton>
-              {/* Add more people as needed */}
+              {studentsData.map((session) => (
+                session.students.map((student) => (
+                  <ListItemButton key={student.studentId} onClick={() => handlePersonClick(student)}>
+                    <Avatar>
+                      <AccountCircleIcon />
+                    </Avatar>
+                    <Typography variant="subtitle1">{`${student.firstName} ${student.lastName}`}</Typography>
+                  </ListItemButton>
+                ))
+              ))}
             </List>
-          </PeopleNamesBox>
+          </div>
 
           {/* Message Display Box */}
           {selectedPerson && (
-            <div style={{ flex: 1, border: '1px solid #ccc', padding: '20px', maxHeight: '600px', overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <Typography variant="h6">Chat with {selectedPerson}</Typography>
-              {messages[selectedPerson].map((msg, index) => (
-                <div key={index}>{msg}</div>
+            <div
+              style={{
+                flex: 1,
+                border: '1px solid #ccc',
+                padding: '20px',
+                maxHeight: '600px',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                borderRadius: '10px',
+              }}
+            >
+              <Typography variant="h6">Chat with {selectedPersonName}</Typography>
+              {chatMessages.map((msg, index) => (
+                <MessageContainer key={index} sender={msg.sender}>
+                  {msg.content}
+                </MessageContainer>
               ))}
               {/* Message input and send button container */}
               <div style={{ display: 'flex', flexDirection: 'column', maxHeight: '100px', marginTop: 'auto' }}>
@@ -124,7 +191,6 @@ const Chats = () => {
                     fullWidth
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
-                    
                   />
                   {/* Send button */}
                   <Button type="submit" variant="contained" color="primary" style={{ marginTop: '10px' }}>
@@ -141,4 +207,3 @@ const Chats = () => {
 };
 
 export default Chats;
-

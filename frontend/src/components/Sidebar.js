@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
 
-const Sidebar = ({ teacherData }) => {
+const Sidebar = ({  }) => {
     const { auth } = useAuth();
     const navigate = useNavigate();
     const handleHomepageClick = () => {

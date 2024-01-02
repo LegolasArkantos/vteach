@@ -92,6 +92,7 @@ const getMyStudents = async (req, res) => {
       // Loop through sessions
       for (const session of sessions) {
         const sessionData = {
+          sessionId :session.id,
           subject: session.subject,
           startTime: session.startTime,
           endTime: session.endTime,
@@ -104,6 +105,7 @@ const getMyStudents = async (req, res) => {
   
           if (student) {
             sessionData.students.push({
+              studentId: student.id,
               firstName: student.user.firstName,
               lastName: student.user.lastName,
               email: student.user.email,
