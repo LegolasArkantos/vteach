@@ -25,13 +25,15 @@ const App = () => {
             <Route path="/teacherHomePage" element={<TeacherHomePage />} />
             <Route path="/session" element={<SessionPage />} />
           </Route>
-        </Route>
+        
 
-        <Route element={<RequireAuth allowedRoles={['student']}/>}>
-          <Route path="/studenthomepage" element={<StudentHomePage />} />
+          <Route element={<RequireAuth allowedRoles={['student']}/>}>
+            <Route path="/studenthomepage" element={<StudentHomePage />} />
+          </Route>
         </Route>
     
         <Route path="/unauthorized" element={<Unauthorized />} />
+
       </Routes>
     
   );

@@ -15,8 +15,10 @@ const SessionPage = () => {
     const [subject, setSubject] = useState('');
     const [sessionPrice, setSessionPrice] = useState('');
     const axiosPrivate = useAxiosPrivate();
+    
 
     const handleSubmit = async (e) => {
+        
         e.preventDefault();
 
         console.log(teacherId);

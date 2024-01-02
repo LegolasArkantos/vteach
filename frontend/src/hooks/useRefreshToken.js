@@ -17,6 +17,7 @@ const useRefreshToken = () => {
             console.log(response);
             return { ...prev,role: response.data.role, 
                 teacherId: response.data.teacherId, 
+                studentId: response.data.studentId,
                 accessToken: response.data.accessToken,
                 firstName:response.data.firstName,
                 lastName:response.data.lastName,
