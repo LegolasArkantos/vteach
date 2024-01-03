@@ -10,6 +10,7 @@ import useRefreshToken from '../hooks/useRefreshToken';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
+
 const drawerWidth = 240;
 
 const RootContainer = styled('div')({
@@ -42,7 +43,7 @@ const ProfilePaper = styled(Paper)({
 const StudentHomePage = () => {
     const { auth } = useAuth();
     const axiosPrivate = useAxiosPrivate();
-    const [studentData, setStudentData] = useState(null);
+    const [teacherData, setStudentData] = useState(null);
     const refresh = useRefreshToken();
     const navigate = useNavigate();
 
@@ -75,12 +76,14 @@ const StudentHomePage = () => {
         };
     }, [auth.studentId, axiosPrivate]);
 
+    
     return (
+        
         <RootContainer>
             <Sidebar />
             {/* Main Content Area */}
             <ContentContainer>
-                {/* Content of the Student Homepage */}
+                {/* Content of the Teacher Homepage */}
                 {studentData && (
                     <>
                         <ProfilePaper elevation={3}>
@@ -100,14 +103,17 @@ const StudentHomePage = () => {
                                 <PhoneIcon /> Contact: {studentData.user.contactInformation?.phone}
                             </Typography>
                             <Typography variant="subtitle1" gutterBottom>
-                                Grade Level: {studentData.gradeLevel}
+                                Teachers: {studentData.teachers}
                             </Typography>
-                            {/* Add more fields as needed */}
+                            <Typography variant="subtitle1" gutterBottom>
+                                Sessions: {' '}
+                                {studentData.sessions}
+                            </Typography>
                         </ProfilePaper>
                         {/* Add more sections as needed */}
                     </>
                 )}
-                <button onClick={() => refresh()}>refresh</button>
+                <button onClick={()=> refresh()}>refresh</button>
             </ContentContainer>
         </RootContainer>
     );
