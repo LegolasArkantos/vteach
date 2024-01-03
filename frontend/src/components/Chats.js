@@ -2,7 +2,6 @@ import React, { useState ,useEffect} from 'react';
 import { Typography, Drawer, List, ListItemButton, Avatar, TextField, Button } from '@mui/material';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import useAuth from '../hooks/useAuth';
@@ -142,7 +141,7 @@ const Chats = () => {
               border: '1px solid #ccc',
               marginRight: '20px',
               borderRadius: '10px',
-              minHeight: '600px',
+              minHeight: '550px',
             }}
           >
             <Typography variant="h6">People you are talking to:</Typography>
@@ -167,7 +166,7 @@ const Chats = () => {
                 flex: 1,
                 border: '1px solid #ccc',
                 padding: '20px',
-                maxHeight: '600px',
+                maxHeight: '550px',
                 overflowY: 'auto',
                 display: 'flex',
                 flexDirection: 'column',

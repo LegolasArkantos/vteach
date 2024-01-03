@@ -1,44 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Paper, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, Avatar, Divider } from '@mui/material';
-import { styled } from '@mui/system';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import PhoneIcon from '@mui/icons-material/Phone';
-import useAuth from '../hooks/useAuth';
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import useRefreshToken from '../hooks/useRefreshToken';
-import { useNavigate } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { TextField, Button, Container, Typography, Paper, Grid } from '@mui/material';
+import axios from 'axios';
 
-
-const drawerWidth = 240;
-
-const RootContainer = styled('div')({
-    display: 'flex',
-});
-
-const DrawerContainer = styled(Drawer)({
-    width: drawerWidth,
-    flexShrink: 0,
-});
-
-const DrawerPaper = styled('div')({
-    width: drawerWidth,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingTop: '20px', // Adjust as needed
-});
-
-const ContentContainer = styled('main')({
-    flexGrow: 1,
-    padding: (theme) => theme.spacing(3),
-});
-
-const ProfilePaper = styled(Paper)({
-    padding: '20px',
-    marginBottom: '20px',
-});
 
 const StudentHomePage = () => {
     const { auth } = useAuth();
