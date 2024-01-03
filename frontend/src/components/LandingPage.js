@@ -95,12 +95,12 @@ const texts = [
             <Typography variant="h6" style={{ flexGrow: 1 }}>
               Welcome to Vteach
             </Typography>
-            <Button color="inherit" href="#login">
+            <Button color="inherit" href="login">
               <Typography variant="subtitle1" style={{ color: '#ffffff' }}>
                 Login
               </Typography>
             </Button>
-            <Button color="inherit" href="#signup">
+            <Button color="inherit" href="signup">
               <Typography variant="subtitle1" style={{ color: '#ffffff' }}>
                 Sign Up
               </Typography>
