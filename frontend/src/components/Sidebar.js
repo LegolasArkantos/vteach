@@ -4,6 +4,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HomeIcon from '@mui/icons-material/Home';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import PersonIcon from '@mui/icons-material/Person'; // Import the Person icon
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
@@ -13,7 +14,7 @@ const Sidebar = () => {
     const location = useLocation();
 
     const handleHomepageClick = () => {
-        navigate('/teacherHomePage');
+        navigate(auth.role === 'teacher' ? '/teacherHomePage' : '/studentHomePage');
     };
 
     const handleSessionClick = () => {
@@ -22,6 +23,10 @@ const Sidebar = () => {
 
     const handleMessageClick = () => {
         navigate('/message');
+    };
+
+    const handleProfileClick = () => {
+        navigate('/profile');
     };
 
     const drawerWidth = 240;
@@ -68,7 +73,9 @@ const Sidebar = () => {
                     <ListItemButton
                         onClick={handleHomepageClick}
                         sx={{
-                            ...(location.pathname === '/teacherHomePage' ? activeListItemStyle : listItemStyle),
+                            ...(location.pathname === (auth.role === 'teacher' ? '/teacherHomePage' : '/studentHomePage')
+                                ? activeListItemStyle
+                                : listItemStyle),
                             ...boldText,
                         }}
                     >
@@ -101,6 +108,20 @@ const Sidebar = () => {
                         </ListItemIcon>
                         <ListItemText primary="Messaging" />
                     </ListItemButton>
+                    {auth.role === 'student' && (
+                        <ListItemButton
+                            onClick={handleProfileClick}
+                            sx={{
+                                ...(location.pathname === '/profile' ? activeListItemStyle : listItemStyle),
+                                ...boldText,
+                            }}
+                        >
+                            <ListItemIcon>
+                                <PersonIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Profile" />
+                        </ListItemButton>
+                    )}
                 </List>
             </DrawerPaper>
         </DrawerContainer>
