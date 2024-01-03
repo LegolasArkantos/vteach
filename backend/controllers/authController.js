@@ -4,15 +4,20 @@ const User = require('../models/user');
 const Teacher = require('../models/teacher');
 const Student = require('../models/student');
 
+
+
+
+
+
+
 // Generate JWT Token
 const generateToken = (userId) => {
-    const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
     const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
 
     return { accessToken, refreshToken };
 };
 
-// Signup
 const signup = async (req, res) => {
     try {
         const { firstName, lastName, email, password, role } = req.body;
@@ -43,10 +48,16 @@ const signup = async (req, res) => {
         }
 
         const tokens = generateToken(user._id);
-
+    
         res.json(tokens);
     } catch (error) {
         console.error(error);
+
+        // Check for duplicate email error (code 11000)
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+            return res.status(409).json({ message: 'Email already in use' });
+        }
+
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
@@ -68,31 +79,83 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const tokens = generateToken(user._id);
-        res.json(tokens);
+        const { accessToken, refreshToken } = generateToken(user._id);
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true ,sameSite : 'lax'});
+        const response = {
+            accessToken,
+            refreshToken,
+            role: user.role,
+        };
+
+        if (user.role === 'teacher') {
+            const teacher = await Teacher.findOne({ user: user._id });
+            if (teacher) {
+                response.teacherId = teacher._id;
+            }
+        } else if (user.role === 'student') {
+            const student = await Student.findOne({ user: user._id });
+            if (student) {
+                response.studentId = student._id;
+            }
+        }
+
+        res.json(response);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
-//refresh token when access token expire
+
 const refreshTokens = (req, res) => {
-    const refreshToken = req.body.refreshToken;
+    const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
         return res.status(401).json({ message: 'Refresh token not provided' });
     }
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
         if (err) {
             return res.status(403).json({ message: 'Invalid refresh token' });
         }
 
-        const accessToken = jwt.sign({ userId: user.userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+        let response = { accessToken: null };
 
-        res.json({ accessToken });
+        try {
+            
+            const userDetails = await User.findOne({ _id: user.userId });
+
+            if (!userDetails) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            response.role = userDetails.role;
+            response.firstName=userDetails.firstName;
+            response.lastName=userDetails.lastName;
+
+            if (userDetails.role === 'teacher') {
+                const teacher = await Teacher.findOne({ user: userDetails._id });
+                if (teacher) {
+                    response.teacherId = teacher._id;
+                }
+            } else if (userDetails.role === 'student') {
+                const student = await Student.findOne({ user: userDetails._id });
+                if (student) {
+                    response.studentId = student._id;
+                }
+            }
+
+            const accessToken = jwt.sign({ userId: userDetails._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
+            response.accessToken = accessToken;
+
+            res.json(response);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
     });
 };
+
+
 
 module.exports = {
     signup,

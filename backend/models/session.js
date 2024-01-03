@@ -13,9 +13,9 @@ const sessionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Student'
     }],
-    startTime: {type: Date,
+    startTime: {type: String,
         required: true,},
-    endTime: {type: Date,
+    endTime: {type: String,
         required: true,},
     status: {
         type: String,

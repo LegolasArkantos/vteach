@@ -193,6 +193,8 @@ module.exports = {
     getMyTeachers,
     updateProfile,
     getMySessions,
+
+    
     getAllTeachers
 
 };

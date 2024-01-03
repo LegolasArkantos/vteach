@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     phone:{ type: String},
     address: {type: String},
   },
-  // ... other fields as needed
+  
 });
 
 module.exports = mongoose.model('User', userSchema);

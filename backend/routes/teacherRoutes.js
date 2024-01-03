@@ -4,8 +4,8 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.get('/:teacherId/name', teacherController.getTeacherName);
-router.get('/:teacherId', teacherController.getTeacherProfile);
+router.get('/:teacherId/name',authMiddleware.verifyToken, teacherController.getTeacherName);
+router.get('/:teacherId',authMiddleware.verifyToken, teacherController.getTeacherProfile);
 router.get('/myStudents/:teacherId', authMiddleware.verifyToken, teacherController.getMyStudents);
 router.put('/updateProfile/:teacherId', authMiddleware.verifyToken, teacherController.updateProfile);
 router.get('/session/:teacherId/:sessionId', authMiddleware.verifyToken, teacherController.getSpecificSessionAndStudents);
