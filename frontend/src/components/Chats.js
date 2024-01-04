@@ -64,6 +64,11 @@ const Chats = () => {
     };
 
     fetchMessages();
+    const intervalId = setInterval(fetchMessages, 10000);
+
+  // Clean up the interval when the component is unmounted
+  return () => clearInterval(intervalId);
+  
   }, [selectedPerson, auth.teacherId, axiosPrivate]);
 
   const sendMessage = async (senderId, receiverId, content) => {
@@ -120,6 +125,7 @@ const Chats = () => {
       {children}
     </div>
   );
+ 
 
   return (
     <div style={{ display: 'flex' }}>

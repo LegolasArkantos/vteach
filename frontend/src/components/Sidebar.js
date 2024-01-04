@@ -7,11 +7,21 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import PersonIcon from '@mui/icons-material/Person'; // Import the Person icon
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import useLogout from '../hooks/useLogout';
+import IconButton from '@mui/material/IconButton';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const Sidebar = () => {
     const { auth } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const logout = useLogout();
+    
+    const signOut = async () => {
+        await logout();
+        navigate('/login')
+    }
+
 
     const handleHomepageClick = () => {
         navigate(auth.role === 'teacher' ? '/teacherHomePage' : '/studentHomePage');
@@ -43,21 +53,28 @@ const Sidebar = () => {
         flexDirection: 'column',
         alignItems: 'center',
         paddingTop: '20px',
-        backgroundColor: '#F0F7FF', // Set background color
-        height: '100%', // Extend the sidebar to the bottom of the page
+        backgroundColor: '#F0F7FF', 
+        height: '100%', 
     });
 
     const listItemStyle = {
-        borderLeft: '3px solid transparent', // Default border color
+        borderLeft: '3px solid transparent', 
     };
 
     const activeListItemStyle = {
-        borderLeft: '3px solid darkblue', // Dark blue border for the active page
+        borderLeft: '3px solid darkblue', 
     };
 
     const boldText = {
         fontWeight: 'bold',
     };
+
+    const LogoutButton = styled(IconButton)({
+        position: 'absolute',
+        bottom: '10px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+    });
 
     return (
         <DrawerContainer variant="permanent" anchor="left">
@@ -123,6 +140,9 @@ const Sidebar = () => {
                         </ListItemButton>
                     )}
                 </List>
+                <LogoutButton onClick={signOut} color="primary">
+                    <ExitToAppIcon />
+                </LogoutButton>
             </DrawerPaper>
         </DrawerContainer>
     );

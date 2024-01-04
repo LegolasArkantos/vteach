@@ -3,14 +3,13 @@ import {
   Container,
   Paper,
   Typography,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Avatar,
-  Divider,
   Button,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -27,28 +26,31 @@ const RootContainer = styled('div')({
   backgroundColor: '#C8EEEC',
 });
 
-
-
 const ContentContainer = styled('main')({
-    flexGrow: 1,
-    padding: (theme) => theme.spacing(3),
-    backgroundColor: '#C8EEEC', // Set the desired background color
-  });
-  
-  const ProfilePaper = styled(Paper)({
-    padding: '20px',
-    marginBottom: '20px',
-    backgroundColor: '#F0F7FF', // Set the desired background color
-    borderRadius: '15px', // Set the border-radius for a curved box effect
-    marginLeft: '10px', // Add some margin to move away from the sidebar
-    marginRight:'10px',
-    marginTop: '10px',
-    
-  });
+  flexGrow: 1,
+  padding: (theme) => theme.spacing(3),
+  backgroundColor: '#C8EEEC',
+});
+
+const ProfilePaper = styled(Paper)({
+  padding: '20px',
+  marginBottom: '20px',
+  backgroundColor: '#F0F7FF',
+  borderRadius: '15px',
+  marginLeft: '10px',
+  marginRight: '10px',
+  marginTop: '10px',
+});
 
 const StyledButton = styled(Button)({
-  backgroundColor: '#2196f3', // Change color as needed
-  color: '#fff', // Change text color as needed
+  backgroundColor: '#2196f3',
+  color: '#fff',
+  marginTop: '10px',
+});
+
+const UpdateButton = styled(Button)({
+  backgroundColor: '#4caf50',
+  color: '#fff',
   marginTop: '10px',
 });
 
@@ -56,9 +58,22 @@ const TeacherHomePage = () => {
   const { auth } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const [teacherData, setTeacherData] = useState(null);
-  const refresh = useRefreshToken();
-  const navigate = useNavigate();
+  
 
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // State for form fields
+  const [updateData, setUpdateData] = useState({
+    educationalCredentials: '',
+    subjectsTaught: '',
+    firstName: '',
+    lastName: '',
+    contactInformation: '',
+  });
+
+
+
+  //profile
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -86,14 +101,51 @@ const TeacherHomePage = () => {
       isMounted = false;
       controller.abort();
     };
-  }, [auth.teacherId, axiosPrivate]);
+  }, [auth.teacherId, axiosPrivate,teacherData,setTeacherData]);
+
+
+
+
+  const handleUpdateClick = () => {
+    setIsUpdating(true);
+    // Populate form fields with existing data
+    setUpdateData({
+      educationalCredentials: teacherData.educationalCredentials || '',
+      
+      firstName: teacherData.user.firstName || '',
+      lastName: teacherData.user.lastName || '',
+      contactInformation: teacherData.user.contactInformation?.phone || '',
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setUpdateData((prevData) => ({ ...prevData, [field]: value }));
+  };
+
+  const handleUpdateSubmit = async () => {
+    try {
+      // Send updated data to the server
+      await axiosPrivate.put(`http://localhost:3001/teachers/updateProfile/${auth.teacherId}`, {
+        educationalCredentials: updateData.educationalCredentials,
+        firstName: updateData.firstName,
+        lastName: updateData.lastName,
+      contactInformation: { phone: updateData.contactInformation },
+      });
+
+      
+      // Close the form
+      setIsUpdating(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  
 
   return (
     <RootContainer>
       <Sidebar />
-      {/* Main Content Area */}
       <ContentContainer>
-        {/* Content of the Teacher Homepage */}
         {teacherData && (
           <>
             <ProfilePaper elevation={3}>
@@ -129,9 +181,54 @@ const TeacherHomePage = () => {
                   ? teacherData.availableTimeSlots.join(', ')
                   : 'No available time slots'}
               </Typography>
-              <StyledButton onClick={() => refresh()}>Refresh</StyledButton>
+              {isUpdating ? (
+                
+                <Dialog open={isUpdating} onClose={() => setIsUpdating(false)}maxWidth="md"fullWidth={true} style={{ height: '80%', minHeight: '600px' }}>
+                  <DialogTitle>Update Teacher Profile</DialogTitle>
+                  <DialogContent>
+                    
+                      <TextField
+                        label="Educational Credentials"
+                        fullWidth
+                        value={updateData.educationalCredentials}
+                        onChange={(e) => handleInputChange('educationalCredentials', e.target.value)}
+                        style={{ marginBottom: '15px', marginTop: '10px' }}
+                      />
+                      
+                      <TextField
+                        label="First Name"
+                        fullWidth
+                        value={updateData.firstName}
+                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        style={{ marginBottom: '15px' }}
+                      />
+                      <TextField
+                        label="Last Name"
+                        fullWidth
+                        value={updateData.lastName}
+                        onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        style={{ marginBottom: '15px' }}
+                      />
+                      <TextField
+                        label="Contact Information"
+                        fullWidth
+                        value={updateData.contactInformation}
+                        onChange={(e) => handleInputChange('contactInformation', e.target.value)}
+                        style={{ marginBottom: '15px' }}
+                      />
+                    
+                  </DialogContent>
+                  <DialogActions>
+                    <UpdateButton onClick={handleUpdateSubmit}>Update</UpdateButton>
+                    <StyledButton onClick={() => setIsUpdating(false)}>Cancel</StyledButton>
+                  </DialogActions>
+                </Dialog>
+              ) : (
+                // Display "Update" button
+                <StyledButton onClick={handleUpdateClick}>Update</StyledButton>
+              )}
+                            
             </ProfilePaper>
-            {/* Add more sections as needed */}
           </>
         )}
       </ContentContainer>

@@ -131,7 +131,7 @@ const getMyStudents = async (req, res) => {
   const updateProfile = async (req, res) => {
     try {
       const { teacherId } = req.params;
-      const { educationalCredentials, subjectsTaught, availableTimeSlots, firstName, lastName, profilePicture, contactInformation } = req.body;
+      const { educationalCredentials, subjectsTaught, availableTimeSlots, firstName, lastName,  contactInformation } = req.body;
   
       // Find the teacher
       const teacher = await Teacher.findById(teacherId);
@@ -154,7 +154,7 @@ const getMyStudents = async (req, res) => {
   
       user.firstName = firstName || user.firstName;
       user.lastName = lastName || user.lastName;
-      user.profilePicture = profilePicture || user.profilePicture;
+      
       user.contactInformation = contactInformation || user.contactInformation;
   
       await teacher.save();

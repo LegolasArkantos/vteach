@@ -57,7 +57,7 @@ const texts = [
   const Segment = styled('div')({
     position: 'relative',
     fontFamily: 'Roboto, sans-serif', // Use the Roboto font directly in styling
-    backgroundColor: '#55a0ff',
+    backgroundColor: '#C8EEEC',
     color: '#ffffff',
     padding: '40px',
     textAlign: 'center',
@@ -83,7 +83,7 @@ const texts = [
     return (
       <Box
         sx={{
-          backgroundColor: '#4d7373',
+          backgroundColor: '#C8EEEC',
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',

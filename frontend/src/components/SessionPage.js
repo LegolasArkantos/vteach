@@ -7,6 +7,8 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
 import { styled } from '@mui/system';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { useNavigate } from 'react-router-dom';
 
 const SessionPage = () => {
   const { auth } = useAuth();
@@ -24,6 +26,9 @@ const SessionPage = () => {
   const [formError, setFormError] = useState('');
   const axiosPrivate = useAxiosPrivate();
   const [sessionsData, setSessionsData] = useState([]);
+  const navigate = useNavigate();
+  
+
 
   
 
@@ -32,7 +37,24 @@ const SessionPage = () => {
   };
 
   const handleUpdateSession = (session) => {
+    // Set the existing session data to the state for the update form
     setUpdateSessionData(session);
+  
+    // Extract and set values for the update form fields
+    const startTime = new Date(session.startTime);
+    const endTime = new Date(session.endTime);
+
+    setDayOfWeek(session.startTime.split(' ')[0]);
+    setUpdatedStartHour(startTime.getHours().toString());
+    setUpdatedStartMinute(startTime.getMinutes().toString());
+    setUpdatedEndHour(endTime.getHours().toString());
+    setUpdatedEndMinute(endTime.getMinutes().toString());
+    setUpdatedStatus(session.status);
+    setUpdatedPaymentStatus(session.paymentStatus);
+    setUpdatedSubject(session.subject);
+    setUpdatedSessionPrice(session.sessionPrice);
+  
+    // Open the update dialog
     setUpdateDialogOpen(true);
   };
 
@@ -114,8 +136,20 @@ const [updateSessionData, setUpdateSessionData] = useState(null);
 
 
 const handleUpdateDialogClose = () => {
+  // Reset the state values when the update dialog is closed
   setUpdateSessionData(null);
   setUpdateDialogOpen(false);
+
+  // Reset values for the update form fields
+  setUpdatedStartHour('');
+  setUpdatedStartMinute('');
+  setUpdatedEndHour('');
+  setUpdatedEndMinute('');
+  setUpdatedStatus('');
+  setUpdatedPaymentStatus('');
+  setUpdatedSubject('');
+  setUpdatedSessionPrice('');
+  setDayOfWeek('');
 };
 
 const handleUpdateSubmit = async (e) => {
@@ -141,6 +175,8 @@ const handleUpdateSubmit = async (e) => {
     console.error(error);
     
   }
+  
+
 };
 
 const [updatedStartHour, setUpdatedStartHour] = useState('');
@@ -222,51 +258,49 @@ return (
               >
                 Update
               </Button>
+                  </Paper>
+                ))}
+              </div>
             </Paper>
-          ))}
-        </div>
-      </Paper>
 
-      {/* Student Information Section */}
-             <Paper
-                elevation={3}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  padding: '20px',
-                  margin: '20px',
-                  borderRadius: '20px',
-                  width: 'fit-content',
-                  overflowY: 'auto',
-                  maxHeight: '80vh',
-                  marginLeft: '20px',
-                  marginBottom:'200px'
-                }}
-              >
-                {selectedStudents && selectedStudents.length > 0 ? (
-                  selectedStudents.map((student) => (
-                    <Paper
-                      key={student.studentId}
-                      elevation={3}
-                      style={{ padding: '10px', margin: '10px', borderRadius: '15px', width: 'fit-content' }}
-                    >
-                      <Typography variant="h6">{` ${selectedSession ? selectedSession.subject : ''}`}</Typography>
-                      <Typography>
-                        <span style={{ fontWeight: 'bold',color: '#074c84' }}>Name:</span> {`${student.firstName} ${student.lastName}`}
-                      </Typography>
-                      <Typography>
-                        <span style={{ fontWeight: 'bold',color: '#074c84' }}>Email:</span> {`${student.email}`}
-                      </Typography>
-                      {/* Add any other student information you want to display */}
-                    </Paper>
-                  ))
-                ) : (
-                  <Typography>No students selected.</Typography>
-                )}
-              </Paper>
-              
-
+            {/* Student Information Section */}
+            <Paper
+            elevation={3}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              padding: '20px',
+              margin: '20px',
+              borderRadius: '20px',
+              width: 'fit-content',
+              overflowY: 'auto',
+              maxHeight: '80vh',
+              marginLeft: '20px',
+              marginBottom: '200px'
+            }}
+          >
+            {selectedStudents && selectedStudents.length > 0 ? (
+                    selectedStudents.map((student) => (
+                      <Paper
+                        key={student.studentId}
+                        elevation={3}
+                        style={{ padding: '10px', margin: '10px', borderRadius: '15px', width: 'fit-content' }}
+                      >
+                        <Typography variant="h6">{`${selectedSession ? selectedSession.subject : ''}`}</Typography>
+                        <Typography>
+                          <span style={{ fontWeight: 'bold', color: '#074c84' }}>Name:</span> {`${student.firstName} ${student.lastName}`}
+                        </Typography>
+                        <Typography>
+                          <span style={{ fontWeight: 'bold', color: '#074c84' }}>Email:</span> {`${student.email}`}
+                        </Typography>
+                        
+                      </Paper>
+                    ))
+                  ) : (
+                    <Typography>No students selected.</Typography>
+                  )}
+                </Paper>
               <YourFab
                 color="primary"
                 aria-label="add"
@@ -283,6 +317,24 @@ return (
               <DialogTitle>Update Session</DialogTitle>
               <DialogContent>
                 <form onSubmit={handleUpdateSubmit}>
+
+                <FormControl fullWidth margin="normal">
+                  <InputLabel id="day-of-week-update-label">Day of the Week</InputLabel>
+                  <Select
+                    labelId="day-of-week-update-label"
+                    id="day-of-week-update"
+                    value={dayOfWeek}
+                    onChange={(e) => setDayOfWeek(e.target.value)}
+                    label="Day of the Week"
+                    required
+                  >
+                    <MenuItem value="Monday">Monday</MenuItem>
+                    <MenuItem value="Tuesday">Tuesday</MenuItem>
+                    <MenuItem value="Wednesday">Wednesday</MenuItem>
+                    <MenuItem value="Thursday">Thursday</MenuItem>
+                    <MenuItem value="Friday">Friday</MenuItem>
+                  </Select>
+                </FormControl>
                 <TextField
               label="Start Hour"
               variant="outlined"

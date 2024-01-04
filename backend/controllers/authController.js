@@ -83,8 +83,9 @@ const login = async (req, res) => {
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true ,sameSite : 'lax'});
         const response = {
             accessToken,
-            refreshToken,
             role: user.role,
+            firstName: user.firstName,
+            lastName:user.lastName,
         };
 
         if (user.role === 'teacher') {
@@ -154,11 +155,24 @@ const refreshTokens = (req, res) => {
         }
     });
 };
+const logout = (req, res) => {
+    const cookies = req.cookies;
+    if (!cookies?.refreshToken) return res.sendStatus(204); //No content
+  try{
+    res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'None', secure: true });
+    res.sendStatus(204);
+     
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
 
+}
 
 
 module.exports = {
     signup,
     login,
     refreshTokens,
+    logout,
 };
