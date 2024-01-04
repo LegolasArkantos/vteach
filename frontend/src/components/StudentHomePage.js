@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Typography, Avatar, Button, Paper } from '@mui/material';  // Added Paper import
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -108,5 +109,3 @@ const StudentHomePage = () => {
     </RootContainer>
   );
 };
-
-export default StudentHomePage;
