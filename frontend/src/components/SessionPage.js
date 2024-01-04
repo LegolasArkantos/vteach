@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
-import {
-  TextField,
-  Button,
-  Typography,
-  Paper,
-  Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
+import {TextField,Button,Typography,Paper,Grid,Dialog,DialogTitle,DialogContent,MenuItem,FormControl,InputLabel,Select,
 } from '@mui/material';
 import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import AddIcon from '@mui/icons-material/Add';
+import Fab from '@mui/material/Fab';
+import { styled } from '@mui/system';
 
 const SessionPage = () => {
   const { auth } = useAuth();
@@ -38,6 +29,11 @@ const SessionPage = () => {
 
   const handleOpen = () => {
     setIsOpen(true);
+  };
+
+  const handleUpdateSession = (session) => {
+    setUpdateSessionData(session);
+    setUpdateDialogOpen(true);
   };
 
   const handleClose = () => {
@@ -101,23 +97,21 @@ const SessionPage = () => {
     };
 
     fetchSessionsData();
-  }, []);
+  }, [ handleUpdateSession, handleOpen]);
 
   const handleShowStudents = (session) => {
+    setSelectedSession(session);
     setSelectedStudents(session.students);
   };
 const [selectedStudents, setSelectedStudents] = useState(null);
-
+const [selectedSession, setSelectedSession] = useState(null);
   
 
 //update
 const [isUpdateDialogOpen, setUpdateDialogOpen] = useState(false);
 const [updateSessionData, setUpdateSessionData] = useState(null);
 
-const handleUpdateSession = (session) => {
-  setUpdateSessionData(session);
-  setUpdateDialogOpen(true);
-};
+
 
 const handleUpdateDialogClose = () => {
   setUpdateSessionData(null);
@@ -127,12 +121,9 @@ const handleUpdateDialogClose = () => {
 const handleUpdateSubmit = async (e) => {
   e.preventDefault();
 
-  // Gather the updated session data from the form fields
-
+  
   try {
-    // Make a request to your server to update the session
-    // Use the updateSessionData to get the session ID
-    // Update the server API endpoint accordingly
+    
     const response = await axiosPrivate.put(`http://localhost:3001/sessions/updateSession/${updateSessionData.sessionId}`, {
       teacherId: teacherId,
       startTime: `${dayOfWeek} ${updatedStartHour}:${updatedStartMinute}`,
@@ -145,11 +136,10 @@ const handleUpdateSubmit = async (e) => {
 
     console.log(response.data);
 
-    // Close the update form dialog
     handleUpdateDialogClose();
   } catch (error) {
     console.error(error);
-    // Handle error appropriately (show error message, etc.)
+    
   }
 };
 
@@ -162,44 +152,60 @@ const [updatedPaymentStatus, setUpdatedPaymentStatus] = useState('');
 const [updatedSubject, setUpdatedSubject] = useState('');
 const [updatedSessionPrice, setUpdatedSessionPrice] = useState('');
 
-  return (
-    <Grid container>
-      <Grid item xs={2}>
-        <Sidebar />
-      </Grid>
-      <Grid item xs={10} container direction="row" alignItems="flex-start">
-        <Paper
-          elevation={3}
+const YourFab = styled(Fab)({
+  position:'relative',
+  
+});
+
+
+
+return (
+  <Grid container>
+    <Grid item xs={2}>
+      <Sidebar />
+    </Grid>
+    <Grid item xs={10} container direction="row" alignItems="flex-start">
+      {/* Horizontally-scrollable container for session boxes */}
+      <Paper
+        elevation={3}
+        style={{
+          padding: '20px',
+          margin: '20px',
+          borderRadius: '20px',
+          overflowX: 'auto',  
+          scrollbarWidth: 'thin',  // For Firefox
+    scrollbarColor: '#074c84 #f0f0f0',  // For Firefox
+        }}
+      >
+        <div
           style={{
-            padding: '20px',
-            margin: '20px',
-            borderRadius: '20px',
-            width: 'fit-content',
-            overflowY: 'auto',
-            maxHeight: '80vh',
-            scrollbarWidth: 'thin',
+            display: 'flex',
+            flexDirection: 'row',
+            width: 'fit-content',  // Adjust the width as needed
           }}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOpen}
-            style={{ margin: '10px', alignSelf: 'flex-start',marginLeft: '70px' }}
-          >
-            Make New Session
-          </Button>
           {sessionsData.map((session) => (
             <Paper
               key={session.sessionId}
               elevation={3}
-              style={{ padding: '10px', margin: '10px', borderRadius: '15px', width: 'fit-content' }}
+              style={{ padding: '10px', margin: '10px', borderRadius: '15px', width: '300px' }}
             >
               <Typography variant="h6">{session.subject}</Typography>
-              <Typography>{`Time: ${session.startTime} - ${session.endTime}`}</Typography>
-              <Typography>{`Status: ${session.status}`}</Typography>
-              <Typography>{`Payment Status: ${session.paymentStatus}`}</Typography>
-              <Typography>{`Session Price: ${session.sessionPrice}`}</Typography>
-
+              <Typography>
+                <span style={{ fontWeight: 'bold', color: '#074c84' }}>Start Time:</span> {session.startTime}
+              </Typography>
+              <Typography>
+                <span style={{ fontWeight: 'bold', color: '#074c84' }}>End Time:</span> {session.endTime}
+              </Typography>
+              <Typography>
+                <span style={{ fontWeight: 'bold', color: '#074c84' }}>Status:</span> {session.status}
+              </Typography>
+              <Typography>
+                <span style={{ fontWeight: 'bold', color: '#074c84' }}>Payment Status:</span> {session.paymentStatus}
+              </Typography>
+              <Typography>
+                <span style={{ fontWeight: 'bold', color: '#074c84' }}>Session Price:</span> {session.sessionPrice}
+              </Typography>
               <Button
                 variant="contained"
                 color="primary"
@@ -209,155 +215,179 @@ const [updatedSessionPrice, setUpdatedSessionPrice] = useState('');
                 Show Students
               </Button>
               <Button
-                      variant="contained"
-                      color="secondary" // Yellow color
-                      onClick={() => handleUpdateSession(session)}
-                       style={{ marginTop: '10px' }}
-               >
-                  Update
-             </Button>
+                variant="contained"
+                color="secondary"
+                onClick={() => handleUpdateSession(session)}
+                style={{ marginTop: '10px', marginLeft: '10px' }}
+              >
+                Update
+              </Button>
             </Paper>
           ))}
-        </Paper>
+        </div>
+      </Paper>
 
-        {/* Student Information Section */}
-        <Paper
-          elevation={3}
-          style={{
-            padding: '20px',
-            margin: '20px',
-            borderRadius: '20px',
-            width: 'fit-content',
-            overflowY: 'auto',
-            maxHeight: '80vh',
-            marginLeft: '20px',  // Adjust the marginLeft for the desired spacing
-          }}
-        >
-          {selectedStudents && selectedStudents.length > 0 ? (
-            selectedStudents.map((student) => (
-              <Paper
-                key={student.studentId}
+      {/* Student Information Section */}
+             <Paper
                 elevation={3}
-                style={{ padding: '10px', margin: '10px', borderRadius: '15px', width: 'fit-content' }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  padding: '20px',
+                  margin: '20px',
+                  borderRadius: '20px',
+                  width: 'fit-content',
+                  overflowY: 'auto',
+                  maxHeight: '80vh',
+                  marginLeft: '20px',
+                  marginBottom:'200px'
+                }}
               >
-                <Typography>{`Name: ${student.firstName} ${student.lastName}`}</Typography>
-                <Typography>{`Email: ${student.email}`}</Typography>
-                {/* Add any other student information you want to display */}
+                {selectedStudents && selectedStudents.length > 0 ? (
+                  selectedStudents.map((student) => (
+                    <Paper
+                      key={student.studentId}
+                      elevation={3}
+                      style={{ padding: '10px', margin: '10px', borderRadius: '15px', width: 'fit-content' }}
+                    >
+                      <Typography variant="h6">{` ${selectedSession ? selectedSession.subject : ''}`}</Typography>
+                      <Typography>
+                        <span style={{ fontWeight: 'bold',color: '#074c84' }}>Name:</span> {`${student.firstName} ${student.lastName}`}
+                      </Typography>
+                      <Typography>
+                        <span style={{ fontWeight: 'bold',color: '#074c84' }}>Email:</span> {`${student.email}`}
+                      </Typography>
+                      {/* Add any other student information you want to display */}
+                    </Paper>
+                  ))
+                ) : (
+                  <Typography>No students selected.</Typography>
+                )}
               </Paper>
-            ))
-          ) : (
-            <Typography>No students selected.</Typography>
-          )}
-        </Paper>
-        <Dialog open={isUpdateDialogOpen} onClose={handleUpdateDialogClose} maxWidth="md" fullWidth>
-  <DialogTitle>Update Session</DialogTitle>
-  <DialogContent>
-    <form onSubmit={handleUpdateSubmit}>
-    <TextField
-  label="Start Hour"
-  variant="outlined"
-  fullWidth
-  margin="normal"
-  type="number"
-  value={updatedStartHour}
-  onChange={(e) => setUpdatedStartHour(e.target.value)}
-  inputProps={{ min: 0, max: 23 }}
-  required
-/>
+              
 
-<TextField
-  label="Start Minute"
-  variant="outlined"
-  fullWidth
-  margin="normal"
-  type="number"
-  value={updatedStartMinute}
-  onChange={(e) => setUpdatedStartMinute(e.target.value)}
-  inputProps={{ min: 0, max: 59 }}
-  required
-/>
+              <YourFab
+                color="primary"
+                aria-label="add"
+                style={{
+                  position: 'fixed',
+                  bottom: '2rem',  // You can adjust the value as needed
+                  right: '2rem',   // You can adjust the value as needed
+                }}
+                onClick={handleOpen}
+              >
+                <AddIcon />
+              </YourFab>
+               <Dialog open={isUpdateDialogOpen} onClose={handleUpdateDialogClose} maxWidth="md" fullWidth>
+              <DialogTitle>Update Session</DialogTitle>
+              <DialogContent>
+                <form onSubmit={handleUpdateSubmit}>
+                <TextField
+              label="Start Hour"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              type="number"
+              value={updatedStartHour}
+              onChange={(e) => setUpdatedStartHour(e.target.value)}
+              inputProps={{ min: 0, max: 23 }}
+              required
+            />
 
-<TextField
-  label="End Hour"
-  variant="outlined"
-  fullWidth
-  margin="normal"
-  type="number"
-  value={updatedEndHour}
-  onChange={(e) => setUpdatedEndHour(e.target.value)}
-  inputProps={{ min: 0, max: 23 }}
-  required
-/>
+            <TextField
+              label="Start Minute"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              type="number"
+              value={updatedStartMinute}
+              onChange={(e) => setUpdatedStartMinute(e.target.value)}
+              inputProps={{ min: 0, max: 59 }}
+              required
+            />
 
-<TextField
-  label="End Minute"
-  variant="outlined"
-  fullWidth
-  margin="normal"
-  type="number"
-  value={updatedEndMinute}
-  onChange={(e) => setUpdatedEndMinute(e.target.value)}
-  inputProps={{ min: 0, max: 59 }}
-  required
-/>
+            <TextField
+              label="End Hour"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              type="number"
+              value={updatedEndHour}
+              onChange={(e) => setUpdatedEndHour(e.target.value)}
+              inputProps={{ min: 0, max: 23 }}
+              required
+            />
 
-<FormControl fullWidth margin="normal">
-  <InputLabel id="status-label">Status</InputLabel>
-  <Select
-    labelId="status-label"
-    id="status"
-    value={updatedStatus}
-    onChange={(e) => setUpdatedStatus(e.target.value)}
-    label="Status"
-    required
-  >
-    <MenuItem value="scheduled">Scheduled</MenuItem>
-    <MenuItem value="completed">Completed</MenuItem>
-    <MenuItem value="canceled">Canceled</MenuItem>
-  </Select>
-</FormControl>
+            <TextField
+              label="End Minute"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              type="number"
+              value={updatedEndMinute}
+              onChange={(e) => setUpdatedEndMinute(e.target.value)}
+              inputProps={{ min: 0, max: 59 }}
+              required
+            />
 
-<FormControl fullWidth margin="normal">
-  <InputLabel id="payment-status-label">Payment Status</InputLabel>
-  <Select
-    labelId="payment-status-label"
-    id="payment-status"
-    value={updatedPaymentStatus}
-    onChange={(e) => setUpdatedPaymentStatus(e.target.value)}
-    label="Payment Status"
-    required
-  >
-    <MenuItem value="paid">Paid</MenuItem>
-    <MenuItem value="pending">Pending</MenuItem>
-  </Select>
-</FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="status-label">Status</InputLabel>
+              <Select
+                labelId="status-label"
+                id="status"
+                value={updatedStatus}
+                onChange={(e) => setUpdatedStatus(e.target.value)}
+                label="Status"
+                required
+              >
+                <MenuItem value="scheduled">Scheduled</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
+                <MenuItem value="canceled">Canceled</MenuItem>
+              </Select>
+            </FormControl>
 
-<TextField
-  label="Subject"
-  variant="outlined"
-  fullWidth
-  margin="normal"
-  value={updatedSubject}
-  onChange={(e) => setUpdatedSubject(e.target.value)}
-  required
-/>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="payment-status-label">Payment Status</InputLabel>
+              <Select
+                labelId="payment-status-label"
+                id="payment-status"
+                value={updatedPaymentStatus}
+                onChange={(e) => setUpdatedPaymentStatus(e.target.value)}
+                label="Payment Status"
+                required
+              >
+                <MenuItem value="paid">Paid</MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+              </Select>
+            </FormControl>
 
-<TextField
-  label="Session Price"
-  variant="outlined"
-  fullWidth
-  margin="normal"
-  type="number"
-  value={updatedSessionPrice}
-  onChange={(e) => setUpdatedSessionPrice(e.target.value)}
-  required
-/>
-      <Button type="submit" variant="contained" color="primary" fullWidth>
-        Update
-      </Button>
-    </form>
-  </DialogContent>
-</Dialog>
+            <TextField
+              label="Subject"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={updatedSubject}
+              onChange={(e) => setUpdatedSubject(e.target.value)}
+              required
+            />
+
+            <TextField
+              label="Session Price"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              type="number"
+              value={updatedSessionPrice}
+              onChange={(e) => setUpdatedSessionPrice(e.target.value)}
+              required
+            />
+                  <Button type="submit" variant="contained" color="primary" fullWidth>
+                    Update
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
         {/* Existing code for the form dialog */}
         <Dialog open={isOpen} onClose={handleClose} maxWidth="md" fullWidth>
           <DialogTitle>Session Page</DialogTitle>
