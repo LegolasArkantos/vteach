@@ -58,7 +58,7 @@ const TeacherHomePage = () => {
   const { auth } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const [teacherData, setTeacherData] = useState(null);
-  
+  const [updateCompleted, setUpdateCompleted] = useState(false);
 
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -88,20 +88,19 @@ const TeacherHomePage = () => {
         const response = await axiosPrivate.get(`/teachers/${auth.teacherId}`, {
           signal: controller.signal,
         });
-
+        console.log("check2")
         isMounted && setTeacherData(response.data.teacher);
       } catch (error) {
         console.error(error);
       }
     };
-
-    getTeacherProfile();
-
+    getTeacherProfile()
+    setUpdateCompleted(false);    
     return () => {
       isMounted = false;
       controller.abort();
     };
-  }, [auth.teacherId, axiosPrivate,teacherData,setTeacherData]);
+  }, [auth.teacherId, axiosPrivate,updateCompleted]);
 
 
 
@@ -132,7 +131,7 @@ const TeacherHomePage = () => {
       contactInformation: { phone: updateData.contactInformation },
       });
 
-      
+      setUpdateCompleted(true);
       // Close the form
       setIsUpdating(false);
     } catch (error) {
