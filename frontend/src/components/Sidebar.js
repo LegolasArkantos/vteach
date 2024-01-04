@@ -18,7 +18,7 @@ const Sidebar = () => {
     };
 
     const handleSessionClick = () => {
-        navigate('/session');
+        navigate(auth.role === 'teacher' ? '/session' : '/studentsessionpage');
     };
 
     const handleMessageClick = () => {
