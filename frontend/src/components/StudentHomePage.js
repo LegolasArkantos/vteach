@@ -109,3 +109,5 @@ const StudentHomePage = () => {
     </RootContainer>
   );
 };
+
+export default StudentHomePage;
