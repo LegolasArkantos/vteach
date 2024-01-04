@@ -26,13 +26,28 @@ const getSpecificStudent = async (req, res) => {
                 path: 'user',
                 select: ['firstName', 'lastName', 'email', 'contactInformation', 'profilePicture']
             })
+
+            const studentData = {
+                user: {
+                    firstName: student.user.firstName,
+                    lastName: student.user.lastName,
+                    email: student.user.email,
+                    contactInformation: student.user.contactInformation,
+                 profilePicture: student.user.profilePicture,
+                },
+
+                teachers: student.teachers,
+                availableTimeSlots: student.teachers.availableTimeSlots,
+                
+
+            }
             
 
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
 
-        res.status(200).json({ student });
+        res.status(200).json({ student: studentData });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
