@@ -24,15 +24,31 @@ const getSpecificStudent = async (req, res) => {
             })
             .populate({
                 path: 'user',
-                select: ['firstName', 'lastName', 'email', 'contactInformation', 'profilePicture']
+                
             })
+
+            const studentData = {
+                user: {
+                    firstName: student.user.firstName,
+                    lastName: student.user.lastName,
+                    email: student.user.email,
+                    contactInformation: student.user.contactInformation,
+                    educationalLevel:student.user.educationalLevel,
+                    subjectsOfInterest:student.user.subjectsOfInterest,
+                },
+
+                teachers: student.teachers,
+                availableTimeSlots: student.teachers.availableTimeSlots,
+                
+
+            }
             
 
         if (!student) {
             return res.status(404).json({ message: 'Student not found' });
         }
 
-        res.status(200).json({ student });
+        res.status(200).json({ student: studentData });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -75,6 +91,7 @@ const getMyTeachers = async (req, res) => {
 
         const teacherData = teachers.map(teacher => {
             return {
+                teacherId:teacher.id,
                 name: teacher.user.firstName + ' ' + teacher.user.lastName,
                 email: teacher.user.email,
                 contactInformation: teacher.user.contactInformation,

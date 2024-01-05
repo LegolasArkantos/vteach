@@ -19,7 +19,7 @@ const images = [
   
 const texts = [
     'Uzair giving ted talk on rdr2',
-    'Unas rethinking his life choices at 2am in the night',
+    'Explore and Learn',
     'Of course its imad at nanis house',
     
   ];

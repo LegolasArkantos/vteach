@@ -7,7 +7,6 @@ import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
 import { styled } from '@mui/system';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useNavigate } from 'react-router-dom';
 
 const SessionPage = () => {

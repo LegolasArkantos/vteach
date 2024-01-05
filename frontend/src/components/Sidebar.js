@@ -4,7 +4,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HomeIcon from '@mui/icons-material/Home';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import PersonIcon from '@mui/icons-material/Person'; // Import the Person icon
+import PersonIcon from '@mui/icons-material/Person'; 
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import useLogout from '../hooks/useLogout';
@@ -32,8 +32,7 @@ const Sidebar = () => {
     };
 
     const handleMessageClick = () => {
-        navigate('/message');
-    };
+        navigate(auth.role === 'teacher' ? '/message' : '/studentchats');    };
 
     const handleProfileClick = () => {
         navigate('/profile');
@@ -44,7 +43,7 @@ const Sidebar = () => {
     const DrawerContainer = styled(Drawer)({
         width: drawerWidth,
         flexShrink: 0,
-        height: '100vh', // Extend the sidebar to the bottom of the page
+        height: '100vh', 
     });
 
     const DrawerPaper = styled('div')({

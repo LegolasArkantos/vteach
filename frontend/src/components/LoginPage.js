@@ -22,7 +22,7 @@ const LoginPage = () => {
       
       console.log(response.data)
       
-      const { accessToken, refreshToken,role,teacherId,studentId } = response.data;
+      const { accessToken, refreshToken,role,teacherId,studentId} = response.data;
 
 
       // Call the login function with the user data
